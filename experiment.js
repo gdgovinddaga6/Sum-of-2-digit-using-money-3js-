@@ -87,8 +87,17 @@ function resetExperiment()
 
 function updateExperimentElements(t, dt)
 {
+    addnotes();
+    addnotes2();
+    countcoins();
+    countcoins2();
+    countnotes();
+    countnotes2();
+
+
   if(font && !numberTextLoaded) {
   test();
+
   verticalLine();
   horizontalLine1();
   horizontalLine2();
@@ -98,6 +107,8 @@ function updateExperimentElements(t, dt)
   {
       addCoins();
       addCoins1();
+
+
   }
 
 }
@@ -105,12 +116,19 @@ function updateExperimentElements(t, dt)
 function addCoins()
 {
   var x= myCenterX + 5;
- var y = myCenterY + 6;
- var z = 0;
+  var y = myCenterY + 6;
+  var z = 0;
+  var imgUtils = THREE.ImageUtils.loadTexture('1rs.png',{},function(){PIErender();});
+  var material = new THREE.MeshBasicMaterial(
+  {
+      transparent: true,
+      map: imgUtils
+  });
+
     for(var i =0; i<num1%10;i++)
     {
         geometry = new THREE.CircleGeometry(1,64);
-        material = new THREE.MeshBasicMaterial({color : 0xffffff});
+        //material = new THREE.MeshBasicMaterial({color : 0xffffff});
         num1Coins[i] = new THREE.Mesh(geometry, material);
         num1Coins[i].position.set(x,y,0);
         PIEaddElement(num1Coins[i]);
@@ -128,10 +146,16 @@ function addCoins1()
   var x= myCenterX + 5;
  var y = myCenterY - 0.2;
  var z = 0;
+ var imgUtils = THREE.ImageUtils.loadTexture('1rs.png',{},function(){PIErender();});
+ var material = new THREE.MeshBasicMaterial(
+ {
+     transparent: true,
+     map: imgUtils
+ });
     for(var i =0; i<num2%10;i++)
     {
         geometry = new THREE.CircleGeometry(1,64);
-        material = new THREE.MeshBasicMaterial({color : 0xffffff});
+      //  material = new THREE.MeshBasicMaterial({color : 0xffffff});
         num1Coins[i] = new THREE.Mesh(geometry, material);
         num1Coins[i].position.set(x,y,0);
         PIEaddElement(num1Coins[i]);
@@ -149,7 +173,7 @@ function test()
   if(text)
     PIEremoveElement(text);
   ////alert(num1+" "+num2);
-  geometry = getGeometry(num1,1);
+  geometry = getGeometry('  '+num1,1);
   material = new THREE.MeshBasicMaterial({color:0xffffff});
   text = new THREE.Mesh(geometry, material);
   text.position.set(-15,5,5);
@@ -161,7 +185,7 @@ function test()
   text.position.set(-14,5,5);
   PIEaddElement(text);*/
 
-  geometry = getGeometry(num2,1);
+  geometry = getGeometry('  '+num2,1);
   material = new THREE.MeshBasicMaterial({color:0xffffff});
   text = new THREE.Mesh(geometry, material);
   text.position.set(-15,3,5);
@@ -338,4 +362,96 @@ function horizontalLine3() {
   var line = new THREE.Line( geometry, material );
   PIEaddElement( line );
 
+}
+
+function addnotes(){
+  var notes1 = num1/10;
+  var notes2 = num2/10;
+  var geometry = new THREE.BoxGeometry(8,3);
+  // var material = new THREE.MeshBasicMaterial( {color: 0x0000ff  } );
+  var imgUtils = THREE.ImageUtils.loadTexture('10rs.png',{},function(){PIErender();});
+  var material = new THREE.MeshBasicMaterial(
+  {
+      transparent: true,
+      map: imgUtils
+  });
+  var cube1 = new Array(Math.floor(notes1));
+  var x =0;
+  var y = 0;
+  var z =0;
+  for(var i=0; i <Math.floor(notes1); i++)
+  {
+    cube1[i] = new THREE.Mesh( geometry, material );
+    cube1[i].position.set(myCenterX-4+x,myCenterY+6+y,0);
+    PIEaddElement( cube1[i] );
+    y -= 0.3;
+    x += 0.3;
+  }
+
+  // var cube2 = cube.clone();
+  // cube2.position.set(myCenterX-4,myCenterY+5.3,-4);
+  // PIEaddElement(cube2);
+  //
+
+}
+
+function addnotes2() {
+  var notes1 = num1/10;
+  var notes2 = num2/10;
+  var geometry = new THREE.BoxGeometry(8,3);
+  // var material = new THREE.MeshBasicMaterial( {color: 0x0000ff  } );
+  var imgUtils = THREE.ImageUtils.loadTexture('10rs.png',{},function(){PIErender();});
+  var material = new THREE.MeshBasicMaterial(
+  {
+      transparent: true,
+      map: imgUtils
+  });
+  var cube1 = new Array(Math.floor(notes2));
+  var x =0;
+  var y = 0;
+  var z =0;
+  for(var i=0; i <Math.floor(notes2); i++)
+  {
+    cube1[i] = new THREE.Mesh( geometry, material );
+    cube1[i].position.set(myCenterX-5.5 +x,myCenterY-0.8+y,0);
+    PIEaddElement( cube1[i] );
+    y -=0.2;
+    x += 0.4;
+  }
+
+}
+
+function countcoins()
+{
+  geometry = getGeometry( num1 % 10+' coins' , 0.5 );
+  material = new THREE.MeshBasicMaterial({color:0xffffff});
+  text = new THREE.Mesh(geometry, material);
+  text.position.set(+15,2,3);
+  PIEaddElement(text);
+}
+
+function countcoins2()
+{
+  geometry = getGeometry( num2 % 10+' coins' , 0.5 );
+  material = new THREE.MeshBasicMaterial({color:0xffffff});
+  text = new THREE.Mesh(geometry, material);
+  text.position.set(+15,-3,3);
+  PIEaddElement(text);
+}
+
+function countnotes()
+{
+  geometry = getGeometry( Math.floor(num1 / 10) +' notes' , 0.5 );
+  material = new THREE.MeshBasicMaterial({color:0xffffff});
+  text = new THREE.Mesh(geometry, material);
+  text.position.set(-11,2,3);
+  PIEaddElement(text);
+}
+function countnotes2()
+{
+  geometry = getGeometry(Math.floor( num2 / 10) +' notes' , 0.5 );
+  material = new THREE.MeshBasicMaterial({color:0xffffff});
+  text = new THREE.Mesh(geometry, material);
+  text.position.set(-11,-3,3);
+  PIEaddElement(text);
 }
