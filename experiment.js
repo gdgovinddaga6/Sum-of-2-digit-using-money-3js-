@@ -11,12 +11,14 @@ var myCenterY;
 var font,flag = Math.floor(Math.random()*100) ,text;
 var flag2 = Math.floor(Math.random()*100);
 var res = flag+flag2;
-var hmc;
+var hmc, numberTextLoaded = 0;
 
 
 var numberLabel1;
 var numberLabel2;
 var minNumber, maxNumber, numberStep,num1,num2;
+
+var num1Coins = [], num2Coins = [], resCoins = [];
 
 function initialiseScene()
 {
@@ -85,34 +87,69 @@ function resetExperiment()
 
 function updateExperimentElements(t, dt)
 {
-  if(font) {
+  if(font && !numberTextLoaded) {
   test();
   verticalLine();
   horizontalLine1();
   horizontalLine2();
-//  horizontalLine3();
+  horizontalLine3();
+}
+  if(numberTextLoaded)
+  {
+      addCoins();
+      addCoins1();
+  }
 
-  //coin();
-  lastDigit();
 }
+
+function addCoins()
+{
+  var x= myCenterX + 5;
+ var y = myCenterY + 6;
+ var z = 0;
+    for(var i =0; i<num1%10;i++)
+    {
+        geometry = new THREE.CircleGeometry(1,64);
+        material = new THREE.MeshBasicMaterial({color : 0xffffff});
+        num1Coins[i] = new THREE.Mesh(geometry, material);
+        num1Coins[i].position.set(x,y,0);
+        PIEaddElement(num1Coins[i]);
+        x = x + 3;
+        if(i==4)
+        {
+           x = myCenterX + 5;
+           y = y - 2.5;
+        }
+    }
 }
-function coin(){
-  coin1();
-  coin2();
-  coin3();
-  coin4();
-  coin5();
-  coin6();
-  coin7();
-  coin8();
-  coin9();
+
+function addCoins1()
+{
+  var x= myCenterX + 5;
+ var y = myCenterY - 0.2;
+ var z = 0;
+    for(var i =0; i<num2%10;i++)
+    {
+        geometry = new THREE.CircleGeometry(1,64);
+        material = new THREE.MeshBasicMaterial({color : 0xffffff});
+        num1Coins[i] = new THREE.Mesh(geometry, material);
+        num1Coins[i].position.set(x,y,0);
+        PIEaddElement(num1Coins[i]);
+        x = x + 3;
+        if(i==4)
+        {
+           x = myCenterX + 5;
+           y = y - 2.5;
+        }
+    }
 }
 
 function test()
 {
   if(text)
     PIEremoveElement(text);
-  geometry = getGeometry(flag,1);
+  ////alert(num1+" "+num2);
+  geometry = getGeometry(num1,1);
   material = new THREE.MeshBasicMaterial({color:0xffffff});
   text = new THREE.Mesh(geometry, material);
   text.position.set(-15,5,5);
@@ -124,7 +161,7 @@ function test()
   text.position.set(-14,5,5);
   PIEaddElement(text);*/
 
-  geometry = getGeometry(flag2,1);
+  geometry = getGeometry(num2,1);
   material = new THREE.MeshBasicMaterial({color:0xffffff});
   text = new THREE.Mesh(geometry, material);
   text.position.set(-15,3,5);
@@ -142,11 +179,15 @@ function test()
   text.position.set(-17,3.1,3);
   PIEaddElement(text);
 
+  res = num1 + num2;
+
   geometry = getGeometry(res,1);
   material = new THREE.MeshBasicMaterial({color:0xffffff});
   text = new THREE.Mesh(geometry, material);
   text.position.set(-16,1,3);
   PIEaddElement(text);
+
+  numberTextLoaded = 1;
 
 
 /*  geometry = getGeometry("Result of Sum of 2 Numbers",0.5);
@@ -163,7 +204,9 @@ line();
 
 function getNumber1(newValue)
 {
-    num1 = newValue.toFixed(2);
+    num1 = newValue;
+    ////alert(num1);
+
 }
 
 function getNumber()
@@ -179,32 +222,23 @@ function getNumber()
 
 function getNumber2(newValue)
 {
-    num2 = newValue.toFixed(2);
+    num2 = newValue;
+    ////alert(num1);
 }
 
 function setSlider()
 {
     setSliderVariables();
-    var getNumber1 = getNumber();
-    var getNumber2 = getNumber();
+    num1 = getNumber();
+    num2 = getNumber();
     PIEaddInputSlider(numberLabel1, num1, getNumber1, minNumber, maxNumber, numberStep);
     PIEaddInputSlider(numberLabel2, num2, getNumber2, minNumber, maxNumber, numberStep);
-    // // PIEaddDisplayText(numberLabel1, num1);
-    // PIEaddDisplayText(numberLabel2, num2);
-
-    // num1 = num1.toFixed(2);
-    // num2 = num2.toFixed(2);
-
 }
 
 function setSliderVariables()
 {
     numberLabel1 = "Number 1";
     numberLabel2 = "Number 2";
-
-
-    num1 = flag;
-    num2 = flag2;
 
     minNumber  = 10;
     maxNumber  = 99;
@@ -295,202 +329,13 @@ function horizontalLine3() {
 
   var geometry = new THREE.Geometry();
   geometry.vertices.push(
-    	new THREE.Vector3( 14, 1.3,10 ),
-      // new THREE.Vector3(5,5,5)
-  new THREE.Vector3(-13,2,-10)
+    	new THREE.Vector3( 11, -2.5,15 ),
+    //new THREE.Vector3(8,5,6)
+  new THREE.Vector3(-13,-5.1,-10)
 
   );
 
   var line = new THREE.Line( geometry, material );
   PIEaddElement( line );
 
-}
-
-
-
-function coin1()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+5,myCenterY+6,0);
-    PIEaddElement( circle );
-}
-
-function coin2()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+7.2,myCenterY+6,0);
-    PIEaddElement( circle );
-}
-function coin3()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+9.4,myCenterY+6,0);
-    PIEaddElement( circle );
-}
-function coin4()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+11.6,myCenterY+6,0);
-    PIEaddElement( circle );
-}
-function coin5()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+13.8 ,myCenterY+6,0);
-    PIEaddElement( circle );
-}
-function coin6()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+13.8 ,myCenterY+3.8,0);
-    PIEaddElement( circle );
-}
-function coin7()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+11.6 ,myCenterY+3.8,0);
-    PIEaddElement( circle );
-}
-function coin8()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+9.4 ,myCenterY+3.8,0);
-    PIEaddElement( circle );
-}
-function coin9()
-{
-    var geometry = new THREE.CircleGeometry( 1, 32 );
-    geometry.vertices.shift();
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-    var circle = new THREE.Mesh( geometry, material );
-
-   circle.position.set(myCenterX+7.2,myCenterY+3.8,0);
-    PIEaddElement( circle );
-}
-
-
-function lastDigit () {
-
-  hmc = res % 10;
-
-  if(hmc == 9)
-  {
-    coin9();
-    coin8();
-    coin7();
-    coin6();
-    coin5();
-    coin4();
-    coin3();
-    coin2();
-    coin1();
-  }
-
-  if(hmc == 8)
-  {
-
-    coin8();
-    coin7();
-    coin6();
-    coin5();
-    coin4();
-    coin3();
-    coin2();
-    coin1();
-  }
-
-  if(hmc == 7)
-  {
-
-    coin7();
-    coin6();
-    coin5();
-    coin4();
-    coin3();
-    coin2();
-    coin1();
-  }
-
-  if(hmc == 6)
-  {
-
-    coin6();
-    coin5();
-    coin4();
-    coin3();
-    coin2();
-    coin1();
-  }
-
-  if(hmc == 5)
-  {
-
-    coin5();
-    coin4();
-    coin3();
-    coin2();
-    coin1();
-  }
-
-  if(hmc == 4)
-  {
-
-    coin4();
-    coin3();
-    coin2();
-    coin1();
-  }
-
-  if(hmc == 3)
-  {
-
-    coin3();
-    coin2();
-    coin1();
-  }
-
-  if(hmc == 2)
-  {
-
-    coin2();
-    coin1();
-  }
-
-  if(hmc == 1)
-  {
-
-    coin1();
-  }
 }
