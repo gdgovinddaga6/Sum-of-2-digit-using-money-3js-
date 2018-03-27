@@ -12,13 +12,15 @@ var font,flag = Math.floor(Math.random()*100) ,text;
 var flag2 = Math.floor(Math.random()*100);
 var res = flag+flag2;
 var hmc, numberTextLoaded = 0;
-
+var note1Flag=0,coin1flag = 0;
 
 var numberLabel1;
 var numberLabel2;
 var minNumber, maxNumber, numberStep,num1,num2;
 
 var num1Coins = [], num2Coins = [], resCoins = [];
+ var cube1 = new Array(9);
+ var v = 1; 
 
 function initialiseScene()
 {
@@ -84,15 +86,11 @@ function resetExperiment()
   PIEchangeInputSlider(numberLabel1,num1);
 
 }
-
+var coinIndex = -1,coinsRemoved = 0, carryNote;
 function updateExperimentElements(t, dt)
 {
-    addnotes();
-    addnotes2();
-    countcoins();
-    countcoins2();
-    countnotes();
-    countnotes2();
+	
+    
 
 
   if(font && !numberTextLoaded) {
@@ -102,13 +100,128 @@ function updateExperimentElements(t, dt)
   horizontalLine1();
   horizontalLine2();
   horizontalLine3();
+  
+  
+  
+}   
+   if(note1Flag == 1){
+	   if(t>10000 && t<=20000)
+		{
+			// alert('hii');
+		// console.log(myCenterY - cube1[0].position.y);
+	   cube1[0].position.y -= 0.3;
+		}
+   }
+   
+
+    
+   if(coin1flag == 1) {
+     
+      if(coinIndex == 10)
+      {
+          if(!coinsRemoved)
+          {
+            removeCoins(9);
+          }
+          else if(!carryNote)
+          {
+            //alert("Coin Added !!")
+            carryNote =  cube1[0].clone();
+            carryNote.position.set(myCenterX+8, myCenterY-6,0);
+            PIEaddElement(carryNote);
+          }
+          else if(carryNote.position.x > (myCenterX-7))
+          {
+            carryNote.position.set(carryNote.position.x - 0.08,myCenterY-6,0);
+          }
+          else
+            coinIndex++;
+      }
+      else if(coinIndex == -1)
+          coinIndex = 0;
+      else if(t>3000 && t<20000)
+      {
+        var dist;
+        if(coinIndex%10 > 4)
+            dist = myCenterY - 7;
+        else
+            dist = myCenterY - 6;
+
+        if(num1Coins[coinIndex].position.y >= dist)
+          num1Coins[coinIndex].position.y -= 0.3;
+        else
+          coinIndex++;
+      }
+      //num1Coins--;
+     // v++;
+
+   //}
+	}
 }
-  if(numberTextLoaded)
+
+function removeCoins(n)
+{
+  for(var i=0; i<=n; i++)
   {
-      addCoins();
-      addCoins1();
+    PIEremoveElement(num1Coins[i]);
+    coinsRemoved = 1;
+    //num1Coins[i]="null";
+  }
+}
 
+function addnotes(){
+  var notes1 = num1/10;
+  var notes2 = num2/10;
+  var geometry = new THREE.BoxGeometry(8,3);
+  // var material = new THREE.MeshBasicMaterial( {color: 0x0000ff  } );
+  var imgUtils = THREE.ImageUtils.loadTexture('10rs.png',{},function(){PIErender();});
+  var material = new THREE.MeshBasicMaterial(
+  {
+      transparent: true,
+      map: imgUtils
+  });
+  //var cube1 = new Array(Math.floor(notes1));
+  var x =0;
+  var y = 0;
+  var z =0;
+  for(var i=0; i <Math.floor(notes1); i++)
+  {
+    cube1[i] = new THREE.Mesh( geometry, material );
+    cube1[i].position.set(myCenterX-4+x,myCenterY+6+y,0);
+    PIEaddElement( cube1[i] );
+    y -= 0.3;
+    x += 0.3;
+  }
+  note1Flag = 1;
+  // var cube2 = cube.clone();
+  // cube2.position.set(myCenterX-4,myCenterY+5.3,-4);
+  // PIEaddElement(cube2);
+  //
+  console.log("notes1");
+}
 
+function addnotes2() {
+  var notes1 = num1/10;
+  var notes2 = num2/10;
+  var geometry = new THREE.BoxGeometry(8,3);
+  // var material = new THREE.MeshBasicMaterial( {color: 0x0000ff  } );
+  var imgUtils = THREE.ImageUtils.loadTexture('10rs.png',{},function(){PIErender();});
+  var material = new THREE.MeshBasicMaterial(
+  {
+      transparent: true,
+      map: imgUtils
+  });
+  var cube1 = new Array(Math.floor(notes2));
+  var x =0;
+  var y = 0;
+  var z =0;
+  for(var i=0; i <Math.floor(notes2); i++)
+  {
+    cube1[i] = new THREE.Mesh( geometry, material );
+    cube1[i].position.set(myCenterX-5.5 +x,myCenterY-0.8+y,0);
+    PIEaddElement( cube1[i] );
+    y -=0.2;
+    x += 0.4;
   }
 
 }
@@ -139,6 +252,7 @@ function addCoins()
            y = y - 2.5;
         }
     }
+    coin1flag= 1;
 }
 
 function addCoins1()
@@ -152,7 +266,7 @@ function addCoins1()
      transparent: true,
      map: imgUtils
  });
-    for(var i =0; i<num2%10;i++)
+    for(var i =num1%10;i<(num1%10+num2%10);i++)
     {
         geometry = new THREE.CircleGeometry(1,64);
       //  material = new THREE.MeshBasicMaterial({color : 0xffffff});
@@ -160,7 +274,7 @@ function addCoins1()
         num1Coins[i].position.set(x,y,0);
         PIEaddElement(num1Coins[i]);
         x = x + 3;
-        if(i==4)
+        if(i==(num1%10+4))
         {
            x = myCenterX + 5;
            y = y - 2.5;
@@ -204,11 +318,17 @@ function test()
   PIEaddElement(text);
 
   res = num1 + num2;
-
   geometry = getGeometry(res,1);
   material = new THREE.MeshBasicMaterial({color:0xffffff});
   text = new THREE.Mesh(geometry, material);
-  text.position.set(-16,1,3);
+  if(res<100)
+  {
+    text.position.set(-15,1,3);
+
+  } else {
+    text.position.set(-16,1,3);
+  }
+ 
   PIEaddElement(text);
 
   numberTextLoaded = 1;
@@ -220,7 +340,14 @@ function test()
   text.position.set(-14,1,3);
   PIEaddElement(text);*/
 
-
+    addnotes();
+    addnotes2();
+    addCoins1();
+    addCoins();
+    countcoins();
+    countcoins2();
+    countnotes();
+    countnotes2(); 
 line();
 
 
@@ -364,62 +491,7 @@ function horizontalLine3() {
 
 }
 
-function addnotes(){
-  var notes1 = num1/10;
-  var notes2 = num2/10;
-  var geometry = new THREE.BoxGeometry(8,3);
-  // var material = new THREE.MeshBasicMaterial( {color: 0x0000ff  } );
-  var imgUtils = THREE.ImageUtils.loadTexture('10rs.png',{},function(){PIErender();});
-  var material = new THREE.MeshBasicMaterial(
-  {
-      transparent: true,
-      map: imgUtils
-  });
-  var cube1 = new Array(Math.floor(notes1));
-  var x =0;
-  var y = 0;
-  var z =0;
-  for(var i=0; i <Math.floor(notes1); i++)
-  {
-    cube1[i] = new THREE.Mesh( geometry, material );
-    cube1[i].position.set(myCenterX-4+x,myCenterY+6+y,0);
-    PIEaddElement( cube1[i] );
-    y -= 0.3;
-    x += 0.3;
-  }
 
-  // var cube2 = cube.clone();
-  // cube2.position.set(myCenterX-4,myCenterY+5.3,-4);
-  // PIEaddElement(cube2);
-  //
-
-}
-
-function addnotes2() {
-  var notes1 = num1/10;
-  var notes2 = num2/10;
-  var geometry = new THREE.BoxGeometry(8,3);
-  // var material = new THREE.MeshBasicMaterial( {color: 0x0000ff  } );
-  var imgUtils = THREE.ImageUtils.loadTexture('10rs.png',{},function(){PIErender();});
-  var material = new THREE.MeshBasicMaterial(
-  {
-      transparent: true,
-      map: imgUtils
-  });
-  var cube1 = new Array(Math.floor(notes2));
-  var x =0;
-  var y = 0;
-  var z =0;
-  for(var i=0; i <Math.floor(notes2); i++)
-  {
-    cube1[i] = new THREE.Mesh( geometry, material );
-    cube1[i].position.set(myCenterX-5.5 +x,myCenterY-0.8+y,0);
-    PIEaddElement( cube1[i] );
-    y -=0.2;
-    x += 0.4;
-  }
-
-}
 
 function countcoins()
 {
@@ -455,3 +527,4 @@ function countnotes2()
   text.position.set(-11,-3,3);
   PIEaddElement(text);
 }
+
